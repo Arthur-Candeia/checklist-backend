@@ -7,7 +7,8 @@ const userSchema = mongoose.Schema({
   tasks: [
     {
       content: {type: String, required: true},
-      done: {type: Boolean, default: false}
+      done: {type: Boolean, default: false},
+      iv: {type: Buffer, required: true}
     }
   ]
 })
