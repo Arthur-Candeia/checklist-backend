@@ -7,4 +7,5 @@ app.use(express.json())
 
 app.use('/', router)
 
-app.listen('3000', () => {console.log('Servidor ativo')})
+const port = process.env.PORT ?? 8080
+app.listen(port, () => {console.log('Servidor ativo')})
