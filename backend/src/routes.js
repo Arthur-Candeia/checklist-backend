@@ -6,6 +6,11 @@ const {encripted, decipher} = require('./crypto')
 const bcrypt = require('bcrypt')
 require('dotenv').config()
 
+router.get('/', async (request, response) => {
+  const users = await User.find()
+  response.status(200).json(users)
+})
+
 router.post('/', async (request, response) => {
   try {
     const {name, password} = await request.body

@@ -1,10 +1,22 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
+
 function App() {
   const [count, setCount] = useState(0)
+  async function teste() {
+    const result = await fetch('http://127.0.0.1:8080/')
+    const data = await result.json()
+    console.log(data[1]._id)
+    return data[1]._id
+  }
+  const [product, setProduct] = useState('')
+  useEffect(() => {
+    let teste2 = teste().then(response => setProduct(response))
+    //setProduct(() => teste())
+  }, [])
 
   return (
     <>
@@ -23,6 +35,9 @@ function App() {
         </button>
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
+        </p>
+        <p>
+          {product}
         </p>
       </div>
       <p className="read-the-docs">
