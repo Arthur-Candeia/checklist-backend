@@ -7,8 +7,7 @@ const bcrypt = require('bcrypt')
 require('dotenv').config()
 
 router.get('/', async (request, response) => {
-  const users = await User.find()
-  response.status(200).json(users)
+  response.status(307).redirect('https://checklist-fullstack-arthur-candeia.vercel.app/')
 })
 
 router.post('/', async (request, response) => {
