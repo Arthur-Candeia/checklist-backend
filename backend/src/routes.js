@@ -17,9 +17,8 @@ router.post('/', async (request, response) => {
 
     if (await bcrypt.compare(password, user.password)) {
       const key = (String(user._id) + String(user._id)).slice(0, 22) + process.env.TASK
-      const tasks = user.tasks.map((element) => decipher(key, element.content, element.iv))
-      response.status(200).json({tasks})
-      //response.status(200).redirect(`/login/${String(user._id)}`)
+      user.tasks.forEach((element) => element.content = decipher(key, element.content, element.iv))
+      response.status(200).json({user})
     }
     else {
       response.status(404).json({err: 'Usuário não encontrado ou senha incorreta'})
