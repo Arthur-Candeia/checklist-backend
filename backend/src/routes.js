@@ -110,20 +110,12 @@ router.put('/login/done/:user/:id/:condition', async (request, response) => {
   }
 })
 
-router.delete('/login/:user/:id', async (request, response) => {
+router.delete('/login/:user/:index', async (request, response) => {
   try {
     const user = await User.findById(request.params.user)
-    let position;
-    for (let i = 0; i < user.tasks.length; i++) {
-      if (user.tasks[i]._id == request.params.id) {
-        position = i;
-      }
-    }
-
-    if (position != undefined) {
-      user.tasks.splice(position, 1)
-      await user.save()
-    }
+    user.tasks.splice(request.params.index, 1)
+    await user.save()
+    response.status(200).json('{}')
   }
   catch {
     response.status(500).json({err: 'Não foi possível alterar a task'})
