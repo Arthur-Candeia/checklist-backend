@@ -8,10 +8,10 @@ require('../db/db')
 app.use((request, response, next) => {
   response.header("Access-Control-Allow-Origin", "*");
   response.header("Access-Control-Allow-Methods", 'GET,PUT,POST,DELETE');
-  app.use(cors());
   next();
 });
 app.use(express.json())
+app.use(cors());
 app.use(express.urlencoded({extended: true}))
 app.use(methodOverride('_method', {methods: ['POST', 'GET']}))
 
