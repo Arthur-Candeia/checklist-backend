@@ -87,6 +87,27 @@ router.put('/login/:user/:id/:content', async (request, response) => {
   }
 })
 
+router.put('/login/done/:user/:id/:condition', async (request, response) => {
+  try {
+    const user = await User.findById(request.params.user)
+    let position;
+
+    for (let i = 0; i < user.tasks.length; i++) {
+      if (user.tasks[i]._id == request.params.id) {
+        position = i;
+      }
+    }
+
+    if (position != undefined) {
+      user.tasks[position].done = request.params.condition == 'true' ? true : false
+      await user.save()
+    }
+  }
+  catch {
+    response.status(500).json({err: 'Não foi possível alterar o estado da task'})
+  }
+})
+
 router.delete('/login/:user/:id', async (request, response) => {
   try {
     const user = await User.findById(request.params.user)
