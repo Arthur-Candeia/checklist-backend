@@ -38,6 +38,7 @@ router.post('/login/:id/:content', async (request, response) => {
 
     await user.tasks.push({content: contentEncripted, iv: iv})
     await user.save()
+    response.status(200).json({user})
   } catch (err) {
     response.status(500).json({err: 'Não foi possível salvar a task'})
   }
