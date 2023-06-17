@@ -92,7 +92,6 @@ router.put('/login/done/:user/:id/:condition', async (request, response) => {
     const user = await User.findById(request.params.user)
     let position;
 
-    response.setHeader("Access-Control-Allow-Origin", "*");
     for (let i = 0; i < user.tasks.length; i++) {
       if (user.tasks[i]._id == request.params.id) {
         position = i;
@@ -102,7 +101,7 @@ router.put('/login/done/:user/:id/:condition', async (request, response) => {
     if (position != undefined) {
       user.tasks[position].done = request.params.condition == 'true' ? true : false
       await user.save()
-      response.status(200)
+      response.status(200).json('{}')
     }
   }
   catch {

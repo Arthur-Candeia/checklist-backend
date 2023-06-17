@@ -10,8 +10,11 @@ app.use((request, response, next) => {
   response.header("Access-Control-Allow-Methods", 'GET,PUT,POST,DELETE');
   next();
 });
+app.use(cors({
+  origin: '*',
+  methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
+}));
 app.use(express.json())
-app.use(cors());
 app.use(express.urlencoded({extended: true}))
 app.use(methodOverride('_method', {methods: ['POST', 'GET']}))
 
