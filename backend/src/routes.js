@@ -17,7 +17,7 @@ router.post('/', async (request, response) => {
 
     if (await bcrypt.compare(password, user.password)) {
       const key = (String(user._id) + String(user._id)).slice(0, 22) + process.env.TASK
-      user.tasks.forEach((element) => element.content = decipher(key, element.content, element.iv))
+      await user.tasks.forEach((element) => element.content = decipher(key, element.content, element.iv))
       response.status(200).json({user})
     }
     else {
