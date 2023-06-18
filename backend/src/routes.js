@@ -66,44 +66,27 @@ router.post('/newuser', async (request, response) => {
   }
 })
 
-router.put('/login/:user/:id/:content', async (request, response) => {
+router.put('/login/:user/:index/:content', async (request, response) => {
   try {
     const user = await User.findById(request.params.user)
-    let position;
     const key = (String(user._id) + String(user._id)).slice(0, 22) + process.env.TASK
-    for (let i = 0; i < user.tasks.length; i++) {
-      if (user.tasks[i]._id == request.params.id) {
-        position = i;
-      }
-    }
     
-    const contentEncripted = encripted(key, request.params.content, user.tasks[position].iv)
-    if (position != undefined) {
-      user.tasks[position].content = contentEncripted
-      await user.save()
-    }
+    const contentEncripted = encripted(key, request.params.content, user.tasks[request.params.index].iv)
+    user.tasks[request.params.index].content = contentEncripted
+    await user.save()
+    response.status(200).json('{}')
   }
   catch {
     response.status(500).json({err: 'Não foi possível alterar a task'})
   }
 })
 
-router.put('/login/done/:user/:id/:condition', async (request, response) => {
+router.put('/login/done/:user/:index/:condition', async (request, response) => {
   try {
     const user = await User.findById(request.params.user)
-    let position;
-
-    for (let i = 0; i < user.tasks.length; i++) {
-      if (user.tasks[i]._id == request.params.id) {
-        position = i;
-      }
-    }
-
-    if (position != undefined) {
-      user.tasks[position].done = request.params.condition == 'true' ? true : false
-      await user.save()
-      response.status(200).json('{}')
-    }
+    user.tasks[request.params.index].done = request.params.condition == 'true' ? true : false
+    await user.save()
+    response.status(200).json('{}')
   }
   catch {
     response.status(500).json({err: 'Não foi possível alterar o estado da task'})
