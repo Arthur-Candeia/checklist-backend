@@ -55,7 +55,7 @@ router.post('/newuser', async (request, response) => {
       const hashedPassword = await bcrypt.hash(password, 10)
       const user = await new User({name, password: hashedPassword})
       await user.save()
-      response.status(201).redirect('/')
+      response.status(201).json('{}')
     }
     else {
       response.status(422).json({err: 'Usuário já existente'})
