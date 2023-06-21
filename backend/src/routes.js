@@ -51,7 +51,7 @@ router.post('/newuser', async (request, response) => {
     const allUsers = await User.find()
     const verify = allUsers.filter((element) => element.name == name)
     
-    if (verify.length == 0) {
+    if (verify.length == 0 && name.length >= 4 && password >= 8) {
       const hashedPassword = await bcrypt.hash(password, 10)
       const user = await new User({name, password: hashedPassword})
       await user.save()
