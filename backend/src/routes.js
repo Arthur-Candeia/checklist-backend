@@ -29,12 +29,13 @@ router.post('/', async (request, response) => {
   }
 })
 
-router.post('/login/:id/:content', async (request, response) => {
+router.post('/login', async (request, response) => {
   try {
-    const user = await User.findById(request.params.id)
+    const {id, content} = await request.body
+    const user = await User.findById(id)
     const key = (String(user._id) + String(user._id)).slice(0, 22) + process.env.TASK
     const iv = Buffer.from(crypto.randomBytes(16))
-    const contentEncripted = encripted(key, request.params.content, iv)
+    const contentEncripted = encripted(key, content, iv)
 
     await user.tasks.push({content: contentEncripted, iv: iv})
     await user.save()
@@ -65,13 +66,14 @@ router.post('/newuser', async (request, response) => {
   }
 })
 
-router.put('/login/:user/:index/:content', async (request, response) => {
+router.put('/login', async (request, response) => {
   try {
-    const user = await User.findById(request.params.user)
+    const {id, index, content} = await request.body
+    const user = await User.findById(id)
     const key = (String(user._id) + String(user._id)).slice(0, 22) + process.env.TASK
     
-    const contentEncripted = encripted(key, request.params.content, user.tasks[request.params.index].iv)
-    user.tasks[request.params.index].content = contentEncripted
+    const contentEncripted = encripted(key, content, user.tasks[index].iv)
+    user.tasks[index].content = contentEncripted
     await user.save()
     response.status(200).json('{}')
   }
