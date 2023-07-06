@@ -6,7 +6,7 @@ const router = require('./routes')
 require('../db/db')
 
 app.use((request, response, next) => {
-  response.header("Access-Control-Allow-Origin", 'https://checklist-fullstack-arthur-candeia.vercel.app*');
+  response.header("Access-Control-Allow-Origin", 'https://checklist-fullstack-arthur-candeia.vercel.app');
   response.header("Access-Control-Allow-Methods", 'GET,PUT,POST,DELETE');
   next();
 });
