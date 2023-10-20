@@ -1,10 +1,13 @@
 const express = require('express')
 const router = express.Router()
 const User = require('../db/model')
-const crypto = require('node:crypto')
-const {encripted, decipher} = require('./crypto')
-const bcrypt = require('bcrypt')
 require('dotenv').config()
+
+const crypto = require('node:crypto')
+const {encripted, decipher} = require('./common/crypto')
+const bcrypt = require('bcrypt')
+const setToken = require('./common/setToken')
+const middlewareGetToken = require('./common/middlewareGetToken')
 
 router.get('/', async (request, response) => {
   response.status(307).redirect('https://checklist-fullstack-arthur-candeia.vercel.app/')
@@ -18,7 +21,8 @@ router.post('/', async (request, response) => {
     if (await bcrypt.compare(password, user.password)) {
       const key = (String(user._id) + String(user._id)).slice(0, 22) + process.env.TASK
       await user.tasks.forEach((element) => element.content = decipher(key, element.content, element.iv))
-      response.status(200).json({user})
+      
+      response.status(200).json({tasks: user.tasks, name: user.name, ...await setToken(user._id)})
     }
     else {
       response.status(404).json({err: 'Usuário não encontrado ou senha incorreta'})
@@ -29,17 +33,18 @@ router.post('/', async (request, response) => {
   }
 })
 
-router.post('/login', async (request, response) => {
+router.post('/login', middlewareGetToken, async (request, response) => {
   try {
-    const {id, content} = await request.body
-    const user = await User.findById(id)
+    const {content} = await request.body
+    const {id} = response.locals.info
+    const user = await User.findById(id, '-password')
     const key = (String(user._id) + String(user._id)).slice(0, 22) + process.env.TASK
     const iv = Buffer.from(crypto.randomBytes(16))
     const contentEncripted = encripted(key, content, iv)
 
     await user.tasks.push({content: contentEncripted, iv: iv})
     await user.save()
-    response.status(200).json({user})
+    response.status(200).json('{}')
   } catch (err) {
     response.status(500).json({err: 'Não foi possível salvar a task'})
   }
@@ -66,10 +71,11 @@ router.post('/newuser', async (request, response) => {
   }
 })
 
-router.put('/login', async (request, response) => {
+router.put('/login', middlewareGetToken, async (request, response) => {
   try {
-    const {id, index, content} = await request.body
-    const user = await User.findById(id)
+    const {index, content} = await request.body
+    const {id} = response.locals.info
+    const user = await User.findById(id, '-password')
     const key = (String(user._id) + String(user._id)).slice(0, 22) + process.env.TASK
     
     const contentEncripted = encripted(key, content, user.tasks[index].iv)
@@ -82,9 +88,10 @@ router.put('/login', async (request, response) => {
   }
 })
 
-router.put('/login/done/:user/:index/:condition', async (request, response) => {
+router.put('/login/done/:index/:condition', middlewareGetToken, async (request, response) => {
   try {
-    const user = await User.findById(request.params.user)
+    const {id} = response.locals.info
+    const user = await User.findById(id, '-password')
     user.tasks[request.params.index].done = request.params.condition == 'true' ? true : false
     await user.save()
     response.status(200).json('{}')
@@ -94,9 +101,10 @@ router.put('/login/done/:user/:index/:condition', async (request, response) => {
   }
 })
 
-router.delete('/login/:user/:index', async (request, response) => {
+router.delete('/login/:index', middlewareGetToken, async (request, response) => {
   try {
-    const user = await User.findById(request.params.user)
+    const {id} = response.locals.info
+    const user = await User.findById(id, '-password')
     user.tasks.splice(request.params.index, 1)
     await user.save()
     response.status(200).json('{}')
