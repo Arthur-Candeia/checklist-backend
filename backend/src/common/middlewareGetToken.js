@@ -7,7 +7,6 @@ async function middlewareGetToken(request, response, next) {
     const {secret} = request.body
     if (!token) return response.status(401).json({msg: 'Você não possui token'})
     const user = await verifyToken(token, secret)
-    console.log(user)
     if (!user) return response.status(404).json({msg: 'Usuário não encontrado'})
     response.locals.info = {id: user.id}
     next()

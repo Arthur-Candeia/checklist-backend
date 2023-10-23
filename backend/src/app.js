@@ -2,9 +2,12 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const router = require('./routes')
-require('../db/db')
+const rateLimit = require('express-rate-limit')
 const allowedOrigins = ['https://checklist-fullstack-arthur-candeia.vercel.app']
+const limiter = rateLimit({windowMs: 30 * 60 * 1000, max: 100, message: {err: 'Too many requests!', msg: 'Too many requests!'}})
+require('../db/db')
 
+app.use(limiter)
 app.use(express.json())
 app.use(cors({
   origin: function(origin, callback) {
